@@ -78,6 +78,18 @@ export default function App() {
     return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   }, [cart]);
 
+  const saveOrderToAWS = async (orderData: any) => {
+    const API_URL = 'https://gr7l5mwo70.execute-api.ap-south-1.amazonaws.com/prod';
+    console.log("Calling API at:", API_URL);
+    console.log("Request Body:", JSON.stringify(orderData));
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(orderData),
+    });
+    return res;
+  };
+
   if (isAdminPath) {
     return <AdminDashboard />;
   }
@@ -116,15 +128,13 @@ export default function App() {
     }
 
     try {
-      console.log("Calling API at:", API_BASE_URL + "/api/payment/order");
-      const res = await fetch(`${API_BASE_URL}/api/payment/order`, {
+      const paymentPayload = { amount: totalAmount };
+      console.log("Calling API at:", API_BASE_URL + "/payment/order");
+      console.log("Request Body:", JSON.stringify(paymentPayload));
+      const res = await fetch(`${API_BASE_URL}/payment/order`, {
         method: "POST",
-        mode: "cors",
-        headers: { 
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify({ amount: totalAmount }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(paymentPayload),
       });
       const order = await res.json();
 
@@ -141,24 +151,16 @@ export default function App() {
         order_id: order.id,
         handler: async (response: any) => {
           try {
-            console.log("Calling API at:", API_BASE_URL + "/api/orders");
-            const saveRes = await fetch(`${API_BASE_URL}/api/orders`, {
-              method: "POST",
-              mode: "cors",
-              headers: { 
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-              },
-              body: JSON.stringify({
-                ...buyerInfo,
-                orderId: order.id,
-                paymentId: response.razorpay_payment_id,
-                items: cart,
-                totalAmount,
-              }),
-            });
+            const orderData = {
+              ...buyerInfo,
+              orderId: order.id,
+              paymentId: response.razorpay_payment_id,
+              items: cart,
+              totalAmount,
+            };
+            const saveRes = await saveOrderToAWS(orderData);
             const saveData = await saveRes.json();
-            if (saveData.success) {
+            if (saveData.success || saveRes.ok) {
               setOrderComplete(true);
               setCart([]);
               toast.success("Order placed successfully!");
@@ -167,7 +169,7 @@ export default function App() {
             }
           } catch (err: any) {
             console.error("Saving order failed", err);
-            alert("Order Save Error: " + err.message);
+            alert("AWS Connection Error: " + err.message);
             toast.error("Payment successful but failed to save order data.");
           }
         },
@@ -184,7 +186,7 @@ export default function App() {
       rzp.open();
     } catch (error: any) {
       console.error("Payment initialization failed", error);
-      alert("Payment Error: " + error.message);
+      alert("AWS Connection Error: " + error.message);
       toast.error(error.message || "Something went wrong. Check if Razorpay keys are set.");
     }
   };
