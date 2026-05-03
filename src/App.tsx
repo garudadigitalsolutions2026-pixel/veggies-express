@@ -61,6 +61,8 @@ interface CartItem {
   quantity: number;
 }
 
+const API_BASE_URL = 'https://gr7l5mwo70.execute-api.ap-south-1.amazonaws.com/prod';
+
 export default function App() {
   const [isAdminPath, setIsAdminPath] = useState(false);
 
@@ -114,7 +116,8 @@ export default function App() {
     }
 
     try {
-      const res = await fetch("/api/payment/order", {
+      console.log("Calling API at:", API_BASE_URL + "/api/payment/order");
+      const res = await fetch(`${API_BASE_URL}/api/payment/order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: totalAmount }),
@@ -126,7 +129,7 @@ export default function App() {
       }
 
       const options = {
-        key: (import.meta as any).env.VITE_RAZORPAY_KEY_ID,
+        key: 'rzp_test_ShReictGH7Zex4',
         amount: order.amount,
         currency: order.currency,
         name: "FreshFarm Express",
@@ -134,7 +137,8 @@ export default function App() {
         order_id: order.id,
         handler: async (response: any) => {
           try {
-            const saveRes = await fetch("/api/orders", {
+            console.log("Calling API at:", API_BASE_URL + "/api/orders");
+            const saveRes = await fetch(`${API_BASE_URL}/api/orders`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({

@@ -19,10 +19,13 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const API_BASE_URL = 'https://gr7l5mwo70.execute-api.ap-south-1.amazonaws.com/prod';
+
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/orders");
+      console.log("Calling API at:", API_BASE_URL + "/api/admin/orders");
+      const res = await fetch(`${API_BASE_URL}/api/admin/orders`);
       const data = await res.json();
       if (Array.isArray(data)) {
         setOrders(data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
