@@ -1,0 +1,6 @@
+{
+  "name": "Veggies Express",
+  "description": "A simple vegetable store selling onions, tomatoes, cilantro, and beetroot with Razorpay integration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
