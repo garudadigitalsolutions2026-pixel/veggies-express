@@ -24,12 +24,13 @@ export default function AdminDashboard() {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      console.log("Calling API at:", API_BASE_URL + "/admin/orders");
-      const res = await fetch(`${API_BASE_URL}/admin/orders`, {
-        method: "GET",
+      console.log("Calling API at:", API_BASE_URL);
+      const res = await fetch(API_BASE_URL, {
+        method: "POST",
         headers: {
           "Content-Type": "text/plain"
-        }
+        },
+        body: JSON.stringify({ action: "getOrders" })
       });
       const data = await res.json();
       if (Array.isArray(data)) {
