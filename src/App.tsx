@@ -84,7 +84,7 @@ export default function App() {
     console.log("Request Body:", JSON.stringify(orderData));
     const res = await fetch(API_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "text/plain" },
       body: JSON.stringify(orderData),
     });
     return res;
@@ -133,7 +133,7 @@ export default function App() {
       console.log("Request Body:", JSON.stringify(paymentPayload));
       const res = await fetch(`${API_BASE_URL}/payment/order`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "text/plain" },
         body: JSON.stringify(paymentPayload),
       });
       const order = await res.json();

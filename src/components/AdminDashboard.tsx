@@ -28,7 +28,7 @@ export default function AdminDashboard() {
       const res = await fetch(`${API_BASE_URL}/admin/orders`, {
         method: "GET",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "text/plain"
         }
       });
       const data = await res.json();
