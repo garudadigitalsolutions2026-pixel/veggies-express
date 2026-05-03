@@ -119,7 +119,11 @@ export default function App() {
       console.log("Calling API at:", API_BASE_URL + "/api/payment/order");
       const res = await fetch(`${API_BASE_URL}/api/payment/order`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        mode: "cors",
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
         body: JSON.stringify({ amount: totalAmount }),
       });
       const order = await res.json();
@@ -140,7 +144,11 @@ export default function App() {
             console.log("Calling API at:", API_BASE_URL + "/api/orders");
             const saveRes = await fetch(`${API_BASE_URL}/api/orders`, {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              mode: "cors",
+              headers: { 
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+              },
               body: JSON.stringify({
                 ...buyerInfo,
                 orderId: order.id,
@@ -154,9 +162,12 @@ export default function App() {
               setOrderComplete(true);
               setCart([]);
               toast.success("Order placed successfully!");
+            } else {
+              throw new Error(saveData.error || "Failed to save order");
             }
-          } catch (err) {
+          } catch (err: any) {
             console.error("Saving order failed", err);
+            alert("Order Save Error: " + err.message);
             toast.error("Payment successful but failed to save order data.");
           }
         },
@@ -173,6 +184,7 @@ export default function App() {
       rzp.open();
     } catch (error: any) {
       console.error("Payment initialization failed", error);
+      alert("Payment Error: " + error.message);
       toast.error(error.message || "Something went wrong. Check if Razorpay keys are set.");
     }
   };

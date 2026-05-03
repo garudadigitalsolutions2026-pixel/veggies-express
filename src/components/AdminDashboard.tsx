@@ -25,13 +25,21 @@ export default function AdminDashboard() {
     setLoading(true);
     try {
       console.log("Calling API at:", API_BASE_URL + "/api/admin/orders");
-      const res = await fetch(`${API_BASE_URL}/api/admin/orders`);
+      const res = await fetch(`${API_BASE_URL}/api/admin/orders`, {
+        method: "GET",
+        mode: "cors",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        }
+      });
       const data = await res.json();
       if (Array.isArray(data)) {
         setOrders(data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to fetch orders", error);
+      alert("Admin Fetch Error: " + error.message);
       toast.error("Failed to load orders from AWS");
     } finally {
       setLoading(false);
